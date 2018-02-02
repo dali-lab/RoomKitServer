@@ -14,6 +14,11 @@ mongo = PyMongo(app)
 app.config['SECRET_KEY'] = os.environ['SECRET_KEY']
 
 
+@app.route('/authenticated', methods=['GET'])
+@require_auth(mongo)
+def authenticated(): return "Success"
+
+
 @app.route('/register', methods=['GET', 'POST'])
 def register():
     if request.method == 'GET':
@@ -94,6 +99,7 @@ def train(id):
     map["model"] = string
     mongo.db.maps.update({'_id': map['_id']}, map, True)
     return "done"
+
 
 @app.route('/maps/<id>', methods=['POST'])
 @require_admin(mongo)
