@@ -24,7 +24,7 @@ and activate it so we can get to installing packages and developing!
 Now you can install all the required packages for this project:
 
 ```bash
-pip install -r packages.txt
+pip install -r requirements.txt
 ```
 
 You are all set up to run and test the RoomKit server! Enjoy!
