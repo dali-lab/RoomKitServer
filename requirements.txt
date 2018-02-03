@@ -2,4 +2,6 @@ Flask
 scikit-learn
 flask_pymongo
 flask_wtf
+numpy
+scipy
 gunicorn
