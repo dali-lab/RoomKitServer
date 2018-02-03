@@ -1,3 +1,4 @@
 Flask
 scikit-learn
 flask_pymongo
+gunicorn
