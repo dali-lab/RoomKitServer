@@ -5,18 +5,21 @@
     <title>Register</title>
 </head>
 <body>
-    <h1>Register for RoomKit</h1>
-    <form action="" method="post">
-        {{ form.hidden_tag() }}
-        <p>
-            {{ form.project.label }}<br>
-            {{ form.project(size=32) }}
-        </p>
-        <p>
-            {{ form.email.label }}<br>
-            {{ form.email(size=32) }}
-        </p>
-        <p>{{ form.register() }}</p><!---->
-    </form>
+    <center>
+        <img src="https://github.com/dali-lab/RoomKit/raw/master/icon/iconWithNameSmall.png">
+        <h1>Register for RoomKit</h1>
+        <form action="" method="post">
+            {{ form.hidden_tag() }}
+            <p>
+                {{ form.project.label }}<br>
+                {{ form.project(size=32) }}
+            </p>
+            <p>
+                {{ form.email.label }}<br>
+                {{ form.email(size=32) }}
+            </p>
+            <p>{{ form.register() }}</p>
+        </form>
+        </center>
 </body>
 </html>
