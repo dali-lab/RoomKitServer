@@ -1,4 +1,5 @@
 Flask
 scikit-learn
 flask_pymongo
+flask_wtf
 gunicorn
