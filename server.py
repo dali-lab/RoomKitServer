@@ -87,12 +87,13 @@ def update_training_data(id):
     trainingData = map["trainingData"]
     if request.json["room"] not in map["rooms"]:
         return "Unknown room", 404
-    roomIndex = map["rooms"].index(request.json["room"])
 
-    this_entry = {"room": roomIndex}
-    for item in request.json["readings"]:
-        this_entry[ML.key_for_beacon(item["major"], item["minor"])] = item["strength"]
-    trainingData.append(this_entry)
+    for data in request.json:
+        roomIndex = map["rooms"].index(data["room"])
+        this_entry = {"room": roomIndex}
+        for item in data["readings"]:
+            this_entry[ML.key_for_beacon(item["major"], item["minor"])] = item["strength"]
+        trainingData.append(this_entry)
     map["trainingData"] = trainingData
 
     mongo.db.maps.update({'_id': map['_id']}, map, True)

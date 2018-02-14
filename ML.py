@@ -59,10 +59,9 @@ def predict(model, map, beacons):
 
     X = [None] * len(keys)
     for beacon in beacons:
-        uuid = beacon['uuid']
         major = beacon['major']
         minor = beacon['minor']
-        key = key_for_beacon(uuid, major, minor)
+        key = key_for_beacon(major, minor)
         if key not in keys:
             continue
         X[keys.index(key)] = float(beacon["strength"])
