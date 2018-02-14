@@ -31,8 +31,8 @@ def train(map):
     return clf
 
 
-def key_for_beacon(uuid, major, minor):
-    return uuid + ":" + str(major) + ":" + str(minor)
+def key_for_beacon(major, minor):
+    return str(major) + ":" + str(minor)
 
 
 def model_to_str(model):

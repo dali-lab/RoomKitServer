@@ -10,17 +10,10 @@ class RegisterForm(FlaskForm):
     register = SubmitField('Register')
 
 
-class ResetTrainingForm(FlaskForm):
-    project = StringField('Project Name', validators=[DataRequired()])
-    email = StringField('Your email', validators=[DataRequired()])
-    reset = SubmitField('RESET TRAINING')
-
-
 def render_register_page():
     form = RegisterForm()
     return render_template('register.html', form=form)
 
 
-def render_reset_training_page():
-    form = RegisterForm()
-    return render_template('reset_training.html', form=form)
+def render_home_page():
+    return render_template('homepage.html')
