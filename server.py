@@ -34,41 +34,44 @@ def register():
         return "Your admin key: '" + admin_key + "'\nYour user key: '" + user_key + "'"
 
 
-@app.route('/maps', methods=['GET', 'POST'])
-@require_admin(mongo=mongo)
+@app.route('/maps')
+@require_auth(mongo)
 def maps():
-    if request.method == "GET":
-        data = mongo.db.maps.find({"projectID": request.auth["id"]})
-        for i in data:
-            i.pop("trainingData", None)
-            i.pop("model", None)
-        return dumps(data)
-    else:
-        data = request.form or request.json
-        if "mapName" not in data or\
-                "rooms" not in data or\
-                "uuid" not in data or\
-                type(data["mapName"]) is not str or\
-                type(data["rooms"]) is not list or\
-                type(data["uuid"]) is not str:
-            return "mapName and rooms fields are required"
+    data = mongo.db.maps.find({"projectID": request.auth["id"]})
+    for i in data:
+        i.pop("trainingData", None)
+        i.pop("model", None)
+    return dumps(data)
 
-        if mongo.db.maps.find_one({"mapName": data["mapName"], "projectID": request.auth["id"]}):
-            return "mapName already taken in this project", 422
 
-        mongo.db.maps.insert({
-            "mapName": data["mapName"],
-            "projectID": request.auth["id"],
-            "uuid": data["uuid"],
-            "rooms": data["rooms"],
-            "trainingData": []
-        })
+@app.route('/maps', methods=['POST'])
+@require_admin(mongo=mongo)
+def map_post():
+    data = request.json
+    if "name" not in data or\
+            "rooms" not in data or\
+            "uuid" not in data or\
+            type(data["name"]) is not str or\
+            type(data["rooms"]) is not list or\
+            type(data["uuid"]) is not str:
+        return "name and rooms fields are required", 422
 
-        return mongo.db.maps.find_one({
-            "mapName": data["mapName"],
-            "projectID": request.auth["id"],
-            "uuid": request.auth["uuid"]
-        })
+    if mongo.db.maps.find_one({"name": data["name"], "projectID": request.auth["id"]}):
+        return "name already taken in this project", 422
+
+    mongo.db.maps.insert({
+        "name": data["name"],
+        "projectID": request.auth["id"],
+        "uuid": data["uuid"],
+        "rooms": data["rooms"],
+        "trainingData": []
+    })
+
+    return mongo.db.maps.find_one({
+        "name": data["name"],
+        "projectID": request.auth["id"],
+        "uuid": data["uuid"]
+    })
 
 
 @app.route('/maps/<id>', methods=['GET'])
