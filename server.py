@@ -41,6 +41,7 @@ def maps():
     for i in data:
         i.pop("trainingData", None)
         i.pop("model", None)
+        i["id"] = str(i.pop("_id"))
     return dumps(data)
 
 
@@ -67,11 +68,14 @@ def map_post():
         "trainingData": []
     })
 
-    return mongo.db.maps.find_one({
+    object = mongo.db.maps.find_one({
         "name": data["name"],
         "projectID": request.auth["id"],
         "uuid": data["uuid"]
     })
+    object["id"] = str(object.pop("_id"))
+
+    return jsonify(object)
 
 
 @app.route('/maps/<id>', methods=['GET'])
@@ -80,6 +84,7 @@ def single_map(id):
     map = mongo.db.maps.find_one_or_404({"$or": [{"_id": ObjectId(id)}, {"uuid": id}]})
     map.pop("trainingData", None)
     map.pop("model", None)
+    map["id"] = str(map.pop("_id"))
     return dumps(map)
 
 
