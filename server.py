@@ -95,10 +95,10 @@ def single_map(id):
 def update_training_data(id):
     map = mongo.db.maps.find_one_or_404({"_id": ObjectId(id)})
     trainingData = map["trainingData"]
-    if request.json["room"] not in map["rooms"]:
-        return "Unknown room", 404
 
     for data in request.json:
+        if data["room"] not in map["rooms"]:
+            return "Unknown room", 404
         roomIndex = map["rooms"].index(data["room"])
         this_entry = {"room": roomIndex}
         for item in data["readings"]:
