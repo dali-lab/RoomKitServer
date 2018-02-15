@@ -38,11 +38,13 @@ def register():
 @require_auth(mongo)
 def maps():
     data = mongo.db.maps.find({"projectID": request.auth["id"]})
+    array = []
     for i in data:
         i.pop("trainingData", None)
         i.pop("model", None)
-        i["id"] = str(i.pop("_id"))
-    return dumps(data)
+        i["id"] = str(i.pop("_id", None))
+        array.append(i)
+    return jsonify(array)
 
 
 @app.route('/maps', methods=['POST'])
@@ -73,7 +75,7 @@ def map_post():
         "projectID": request.auth["id"],
         "uuid": data["uuid"]
     })
-    object["id"] = str(object.pop("_id"))
+    object["id"] = str(object.pop("_id", None))
 
     return jsonify(object)
 
@@ -84,7 +86,7 @@ def single_map(id):
     map = mongo.db.maps.find_one_or_404({"$or": [{"_id": ObjectId(id)}, {"uuid": id}]})
     map.pop("trainingData", None)
     map.pop("model", None)
-    map["id"] = str(map.pop("_id"))
+    map["id"] = str(map.pop("_id", None))
     return dumps(map)
 
 
