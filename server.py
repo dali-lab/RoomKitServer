@@ -122,7 +122,7 @@ def train(id):
 
 
 @app.route('/maps/<id>', methods=['POST'])
-@require_admin(mongo)
+@require_auth(mongo)
 def predict(id):
     map = mongo.db.maps.find_one_or_404({"_id": ObjectId(id)})
     if "model" not in map:
