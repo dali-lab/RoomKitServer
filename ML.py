@@ -19,13 +19,16 @@ def train(map):
     Y = []
     for data in map["trainingData"]:
         entry = []
+        all_neg1 = True
         for item in keys:
-            if item in data:
-                entry.append(float(data[item]))
+            if item in data and float(data[item]) != -1:
+                entry.append(1/float(data[item]))
             else:
-                entry.append(None)
-        Y.append(int(data["room"]))
-        X.append(entry)
+                all_neg1 = False
+                entry.append(0)
+        if not all_neg1:
+            Y.append(int(data["room"]))
+            X.append(entry)
 
     clf.fit(X, Y)
     return clf
