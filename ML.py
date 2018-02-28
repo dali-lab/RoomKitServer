@@ -60,15 +60,15 @@ def predict(model, map, beacons):
     keys = list(keys)
     keys.sort()
 
-    X = [None] * len(keys)
+    X = [0] * len(keys)
     for beacon in beacons:
         major = beacon['major']
         minor = beacon['minor']
         key = key_for_beacon(major, minor)
         if key not in keys or float(beacon["strength"]) == -1:
-            X[keys.index(key)] = 0
             continue
         X[keys.index(key)] = float(beacon["strength"])
+    print(X)
 
     return model.predict([X])[0]
 
