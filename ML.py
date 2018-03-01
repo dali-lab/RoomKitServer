@@ -21,9 +21,9 @@ def train(map):
         entry = []
         all_neg1 = True
         for item in keys:
-            if item in data and float(data[item]) != -1 and float(data[item]) != 0:
+            if item in data and float(data[item]) != 0:
                 all_neg1 = False
-                entry.append(1/float(data[item]))
+                entry.append(100/float(data[item]))
             else:
                 entry.append(0)
         if not all_neg1:
@@ -65,9 +65,9 @@ def predict(model, map, beacons):
         major = beacon['major']
         minor = beacon['minor']
         key = key_for_beacon(major, minor)
-        if key not in keys or float(beacon["strength"]) == -1:
+        if key not in keys or float(beacon["strength"]) == 0:
             continue
-        X[keys.index(key)] = 1/float(beacon["strength"])
+        X[keys.index(key)] = 100/float(beacon["strength"])
     print(X)
 
     return model.predict([X])[0]
