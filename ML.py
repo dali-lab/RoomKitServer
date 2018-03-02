@@ -28,7 +28,7 @@ def train(map):
                 all_neg1 = False
                 entry.append(1/float(data[item]))
             else:
-                entry.append(maxes[item])
+                entry.append(1/maxes[item])
         if not all_neg1:
             Y.append(int(data["room"]))
             X.append(entry)
@@ -66,7 +66,7 @@ def predict(model, map, beacons):
     keys = list(keys)
     keys.sort()
 
-    X = [maxes[key] for key in keys]
+    X = [1/maxes[key] for key in keys]
     for beacon in beacons:
         major = beacon['major']
         minor = beacon['minor']
