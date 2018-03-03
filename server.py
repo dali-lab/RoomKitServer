@@ -40,10 +40,13 @@ def maps():
     data = mongo.db.maps.find({"projectID": request.auth["id"]})
     array = []
     for i in data:
-        i.pop("trainingData", None)
-        i.pop("model", None)
-        i["id"] = str(i.pop("_id", None))
-        array.append(i)
+        array.append({
+            "id": str(i["_id"]),
+            "name": i["name"],
+            "projectID": i["projectID"],
+            "uuid": i["uuid"],
+            "rooms": i["rooms"]
+        })
     return jsonify(array)
 
 
@@ -66,8 +69,7 @@ def map_post():
         "name": data["name"],
         "projectID": request.auth["id"],
         "uuid": data["uuid"],
-        "rooms": data["rooms"],
-        "trainingData": []
+        "rooms": data["rooms"]
     })
 
     object = mongo.db.maps.find_one({
@@ -84,17 +86,29 @@ def map_post():
 @require_auth(mongo)
 def single_map(id):
     map = mongo.db.maps.find_one_or_404({"$or": [{"_id": ObjectId(id)}, {"uuid": id}]})
-    map.pop("trainingData", None)
-    map.pop("model", None)
-    map["id"] = str(map.pop("_id", None))
-    return dumps(map)
+    return dumps({
+        "id": str(map["_id"]),
+        "name": map["name"],
+        "projectID": map["projectID"],
+        "uuid": map["uuid"],
+        "rooms": map["rooms"]
+    })
 
 
 @app.route('/maps/<id>', methods=['PUT'])
 @require_admin(mongo)
 def update_training_data(id):
+    if "client_os" in request.headers:
+        return "client_os required", 422
+
+    client_os = request.headers["client_os"]
+
     map = mongo.db.maps.find_one_or_404({"_id": ObjectId(id)})
-    trainingData = map["trainingData"]
+    if client_os not in map:
+        map[client_os] = {
+            "trainingData": []
+        }
+    trainingData = map[client_os]["trainingData"]
 
     for data in request.json:
         if data["room"] not in map["rooms"]:
@@ -104,7 +118,7 @@ def update_training_data(id):
         for item in data["readings"]:
             this_entry[ML.key_for_beacon(item["major"], item["minor"])] = item["strength"]
         trainingData.append(this_entry)
-    map["trainingData"] = trainingData
+    map[client_os]["trainingData"] = trainingData
 
     mongo.db.maps.update({'_id': map['_id']}, map, True)
     return "Done"
@@ -113,10 +127,15 @@ def update_training_data(id):
 @app.route('/maps/<id>/train', methods=['POST'])
 @require_admin(mongo=mongo)
 def train(id):
+    if "client_os" in request.headers:
+        return "client_os required", 422
+
+    client_os = request.headers["client_os"]
+
     map = mongo.db.maps.find_one_or_404({"_id": ObjectId(id)})
-    model = ML.train(map)
+    model = ML.train(map, client_os)
     string = ML.model_to_str(model)
-    map["model"] = string
+    map[client_os]["model"] = string
     mongo.db.maps.update({'_id': map['_id']}, map, True)
     return "Done"
 
@@ -124,6 +143,11 @@ def train(id):
 @app.route('/maps/<id>', methods=['POST'])
 @require_auth(mongo)
 def predict(id):
+    if "client_os" in request.headers:
+        return "client_os required", 422
+
+    client_os = request.headers["client_os"]
+
     map = mongo.db.maps.find_one_or_404({"_id": ObjectId(id)})
     if "model" not in map:
         return "Model is not yet train", 300
@@ -131,11 +155,11 @@ def predict(id):
     if type(request.json) is not list:
         return "Requires list of beacon readings", 422
 
-    model = ML.load_model(map["model"])
+    model = ML.load_model(map[client_os]["model"])
     if model is None:
         return "Failed to load model", 302
 
-    index = int(ML.predict(model, map, list(request.json)))
+    index = int(ML.predict(model, map, list(request.json), client_os))
     return jsonify({
         "roomIndex": index,
         "room": map["rooms"][index]
