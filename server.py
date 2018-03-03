@@ -98,7 +98,7 @@ def single_map(id):
 @app.route('/maps/<id>', methods=['PUT'])
 @require_admin(mongo)
 def update_training_data(id):
-    if "client_os" in request.headers:
+    if "client_os" not in request.headers:
         return "client_os required", 422
 
     client_os = request.headers["client_os"]
@@ -127,7 +127,7 @@ def update_training_data(id):
 @app.route('/maps/<id>/train', methods=['POST'])
 @require_admin(mongo=mongo)
 def train(id):
-    if "client_os" in request.headers:
+    if "client_os" not in request.headers:
         return "client_os required", 422
 
     client_os = request.headers["client_os"]
@@ -143,7 +143,7 @@ def train(id):
 @app.route('/maps/<id>', methods=['POST'])
 @require_auth(mongo)
 def predict(id):
-    if "client_os" in request.headers:
+    if "client_os" not in request.headers:
         return "client_os required", 422
 
     client_os = request.headers["client_os"]
