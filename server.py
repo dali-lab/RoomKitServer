@@ -117,6 +117,9 @@ def update_training_data(id):
         this_entry = {"room": roomIndex}
         for item in data["readings"]:
             this_entry[ML.key_for_beacon(item["major"], item["minor"])] = item["strength"]
+
+        if len(this_entry.keys()) <= 1:
+            continue
         trainingData.append(this_entry)
     map[client_os]["trainingData"] = trainingData
 
