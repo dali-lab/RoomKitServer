@@ -136,6 +136,10 @@ def train(id):
     client_os = request.headers["client_os"]
 
     map = mongo.db.maps.find_one_or_404({"_id": ObjectId(id)})
+
+    if client_os not in map:
+        return "No training data available", 422
+
     model = ML.train(map, client_os)
     string = ML.model_to_str(model)
     map[client_os]["model"] = string
