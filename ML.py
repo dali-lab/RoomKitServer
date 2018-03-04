@@ -8,13 +8,10 @@ def train(map, client_os):
                         hidden_layer_sizes=(5, 2),
                         random_state=1)
     keys = set()
-    maxes = {}
     for data in map[client_os]["trainingData"]:
         for item in data:
             if item != "room":
                 keys.add(item)
-                if item not in maxes or maxes[item] < data[item]:
-                    maxes[item] = data[item]
     keys = list(keys)
     keys.sort()
 
@@ -24,9 +21,9 @@ def train(map, client_os):
         entry = []
         for item in keys:
             if item in data and float(data[item]) != 0:
-                entry.append(float(data[item]))
+                entry.append(1/float(data[item]))
             else:
-                entry.append(maxes[item])
+                entry.append(0)
         Y.append(int(data["room"]))
         X.append(entry)
 
@@ -53,17 +50,14 @@ def load_model(string):
 
 def predict(model, map, beacons, client_os):
     keys = set()
-    maxes = {}
     for data in map[client_os]["trainingData"]:
         for item in data:
             if item != "room":
                 keys.add(item)
-                if item not in maxes or maxes[item] < data[item]:
-                    maxes[item] = data[item]
     keys = list(keys)
     keys.sort()
 
-    X = [maxes[key] for key in keys]
+    X = [0] * len(keys)
     for beacon in beacons:
         major = beacon['major']
         minor = beacon['minor']
