@@ -64,7 +64,7 @@ def predict(model, map, beacons, client_os):
         key = key_for_beacon(major, minor)
         if key not in keys or float(beacon["strength"]) == 0:
             continue
-        X[keys.index(key)] = float(beacon["strength"])
+        X[keys.index(key)] = 1/float(beacon["strength"])
     print(X)
 
     return model.predict([X])[0]
