@@ -156,8 +156,8 @@ def predict(id):
     client_os = request.headers["client_os"]
 
     map = mongo.db.maps.find_one_or_404({"_id": ObjectId(id)})
-    if "model" not in map:
-        return "Model is not yet train", 300
+    if client_os not in map or "model" not in map[client_os]:
+        return "Model is not yet trained", 300
 
     if type(request.json) is not list:
         return "Requires list of beacon readings", 422
