@@ -166,11 +166,46 @@ def predict(id):
     if model is None:
         return "Failed to load model", 302
 
-    index = int(ML.predict(model, map, list(request.json), client_os))
+    index = int(ML.predict(model, map, [list(request.json)], client_os)[0])
     return jsonify({
         "roomIndex": index,
         "room": map["rooms"][index]
     })
+
+# @app.route('/maps/<id>/savebackup', methods=['POST'])
+# def save_backup(id):
+#
+#     map = mongo.db.maps.find_one_or_404({"_id": ObjectId(id)})
+#     map[request.headers["client_os"]]["trainingData"] = request.json
+#
+#     mongo.db.maps.update({'_id': map['_id']}, map, True)
+#     return "Done"
+
+
+@app.route('/maps/<id>/multiclassify', methods=['POST'])
+@require_auth(mongo)
+def multi_classify(id):
+    if "client_os" not in request.headers:
+        return "client_os required", 422
+
+    client_os = request.headers["client_os"]
+
+    map = mongo.db.maps.find_one_or_404({"_id": ObjectId(id)})
+    if client_os not in map or "model" not in map[client_os]:
+        return "Model is not yet trained", 300
+
+    if type(request.json) is not list or type(list(request.json)[0]) is not list:
+        return "Requires list of lists of beacon readings", 422
+
+    model = ML.load_model(map[client_os]["model"])
+    if model is None:
+        return "Failed to load model", 302
+
+    indexes = ML.predict(model, map, list(request.json), client_os)
+    return jsonify([{
+        "roomIndex": index,
+        "room": map["rooms"][index]
+    } for index in indexes])
 
 
 if __name__ == "__main__":

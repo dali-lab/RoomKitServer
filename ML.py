@@ -48,7 +48,7 @@ def load_model(string):
     return pickle.loads(string)
 
 
-def predict(model, map, beacons, client_os):
+def predict(model, map, beaconsLists, client_os):
     keys = set()
     for data in map[client_os]["trainingData"]:
         for item in data:
@@ -57,15 +57,17 @@ def predict(model, map, beacons, client_os):
     keys = list(keys)
     keys.sort()
 
-    X = [0] * len(keys)
-    for beacon in beacons:
-        major = beacon['major']
-        minor = beacon['minor']
-        key = key_for_beacon(major, minor)
-        if key not in keys or float(beacon["strength"]) == 0:
-            continue
-        X[keys.index(key)] = 1/float(beacon["strength"])
+    X = []
+    for beacons in beaconsLists:
+        x = [0] * len(keys)
+        for beacon in beacons:
+            major = beacon['major']
+            minor = beacon['minor']
+            key = key_for_beacon(major, minor)
+            if key not in keys or float(beacon["strength"]) == 0:
+                continue
+            x[keys.index(key)] = 1/float(beacon["strength"])
+        X.append(x)
     print(X)
 
-    return model.predict([X])[0]
-
+    return model.predict(X)
