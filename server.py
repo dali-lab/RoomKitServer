@@ -203,8 +203,8 @@ def multi_classify(id):
 
     indexes = ML.predict(model, map, list(request.json), client_os)
     return jsonify([{
-        "roomIndex": index,
-        "room": map["rooms"][index]
+        "roomIndex": int(index),
+        "room": map["rooms"][int(index)]
     } for index in indexes])
 
 
