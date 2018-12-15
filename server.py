@@ -118,6 +118,7 @@ def newRoom(id):
 
     if mongo.db.rooms.find_one({ "map": id, "name": data["name"] }):
         return "Room name already taken", 422
+    rooms = mongo.db.rooms.find({ "map": id })
 
     mongo.db.rooms.insert({
         "name": data["name"],
