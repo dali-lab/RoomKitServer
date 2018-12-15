@@ -2,22 +2,15 @@ from sklearn.neural_network import MLPClassifier
 import pickle
 
 
-def train(map, client_os):
+def train(trainingData, keys):
     clf = MLPClassifier(solver='lbfgs',
                         alpha=1e-5,
-                        hidden_layer_sizes=(5, 2),
+                        hidden_layer_sizes=(100, 10),
                         random_state=1)
-    keys = set()
-    for data in map[client_os]["trainingData"]:
-        for item in data:
-            if item != "room":
-                keys.add(item)
-    keys = list(keys)
-    keys.sort()
 
     X = []
     Y = []
-    for data in map[client_os]["trainingData"]:
+    for data in trainingData:
         entry = []
         for item in keys:
             if item in data and float(data[item]) != 0:
@@ -30,6 +23,15 @@ def train(map, client_os):
     clf.fit(X, Y)
     return clf
 
+def keys_for_data(trainingData):
+    keys = set()
+    for data in trainingData:
+        for item in data:
+            if item != "room":
+                keys.add(item)
+    keys = list(keys)
+    keys.sort()
+    return keys
 
 def key_for_beacon(major, minor):
     return str(major) + ":" + str(minor)
@@ -48,15 +50,7 @@ def load_model(string):
     return pickle.loads(string)
 
 
-def predict(model, map, beaconsLists, client_os):
-    keys = set()
-    for data in map[client_os]["trainingData"]:
-        for item in data:
-            if item != "room":
-                keys.add(item)
-    keys = list(keys)
-    keys.sort()
-
+def predict(model, keys, beaconsLists):
     X = []
     for beacons in beaconsLists:
         x = [0] * len(keys)
