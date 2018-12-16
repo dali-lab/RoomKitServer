@@ -7,7 +7,7 @@ from bson.objectid import ObjectId
 import ML
 import os
 
-SUGGESTED_NUM_SAMPELS = 2000
+SUGGESTED_NUM_SAMPLES = 500
 
 app = Flask(__name__)
 app.config['MONGO_URI'] = os.environ['MONGO_URI']
@@ -107,7 +107,7 @@ def rooms(id):
         percentTrained = 0
         if ("num_samples-" + client_os) in room:
             num_samples = room["num_samples-" + client_os]
-            percentTrained = float(num_samples) / SUGGESTED_NUM_SAMPELS
+            percentTrained = float(num_samples) / SUGGESTED_NUM_SAMPLES
         
         array.append({
             "name": room["name"],
@@ -171,7 +171,7 @@ def update_training_data(id):
         }).count()
 
         room["num_samples-" + client_os] = num_samples
-        roomsPercentTrained[room["name"]] = float(num_samples) / SUGGESTED_NUM_SAMPELS
+        roomsPercentTrained[room["name"]] = float(num_samples) / SUGGESTED_NUM_SAMPLES
         mongo.db.rooms.update({"_id": room["_id"]}, room, True)
 
     return jsonify(roomsPercentTrained)
