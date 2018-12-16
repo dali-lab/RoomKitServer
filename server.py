@@ -98,11 +98,12 @@ def rooms(id):
     rooms = mongo.db.rooms.find({ "map": id })
     rooms = list(rooms)
     array = []
+    client_os = equest.headers["os"]
 
     for room in rooms:
         array.append({
             "name": room["name"],
-            "percent_trained": room["percent_trained"]
+            "percent_trained": room["percent_trained-" + client_os]
         })
     return jsonify(array)
 
