@@ -105,8 +105,9 @@ def rooms(id):
 
     for room in rooms:
         percentTrained = 0
-        if ("percent_trained" + client_os) in room:
-            percentTrained = room["percent_trained-" + client_os]
+        if ("num_samples" + client_os) in room:
+            num_samples = room["num_samples-" + client_os]
+            percentTrained = float(num_samples) / 500
         
         array.append({
             "name": room["name"],
@@ -132,7 +133,7 @@ def newRoom(id):
         "name": data["name"],
         "map": id,
         "label": rooms.count(),
-        "percent_trained": 0.0
+        "num_samples": 0
     })
     return jsonify({
         "name": data["name"],
@@ -169,10 +170,8 @@ def update_training_data(id):
             "os": client_os
         }).count()
 
-        percent = float(num_samples) / 500
-        room["percent_trained-" + client_os] = percent
         room["num_samples-" + client_os] = num_samples
-        roomsPercentTrained[room["name"]] = percent
+        roomsPercentTrained[room["name"]] = float(num_samples) / 500
         mongo.db.rooms.update({"_id": room["_id"]}, room, True)
 
     return jsonify(roomsPercentTrained)
