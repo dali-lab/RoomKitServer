@@ -99,13 +99,12 @@ def rooms(id):
         return "os required", 422
     
     rooms = mongo.db.rooms.find({ "map": id })
-    rooms = list(rooms)
     array = []
     client_os = request.headers["os"]
 
     for room in rooms:
         percentTrained = 0
-        if ("num_samples" + client_os) in room:
+        if ("num_samples-" + client_os) in room:
             num_samples = room["num_samples-" + client_os]
             percentTrained = float(num_samples) / 500
         
