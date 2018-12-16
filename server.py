@@ -98,7 +98,7 @@ def rooms(id):
     rooms = mongo.db.rooms.find({ "map": id })
     rooms = list(rooms)
     array = []
-    client_os = equest.headers["os"]
+    client_os = request.headers["os"]
 
     for room in rooms:
         array.append({
