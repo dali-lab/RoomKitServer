@@ -101,9 +101,10 @@ def rooms(id):
     client_os = request.headers["os"]
 
     for room in rooms:
+        percentTrained = room["percent_trained-" + client_os]
         array.append({
             "name": room["name"],
-            "percent_trained": room["percent_trained-" + client_os]
+            "percent_trained": percentTrained
         })
     return jsonify(array)
 
@@ -153,7 +154,7 @@ def update_training_data(id):
             "room": room["_id"],
             "map": id,
             "data": sample,
-            "os": request.headers["os"]
+            "os": client_os
         })
 
         num_samples = mongo.db.samples.find({
