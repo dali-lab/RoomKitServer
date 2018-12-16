@@ -95,6 +95,9 @@ def single_map(id):
 @app.route('/maps/<id>/rooms', methods=['GET'])
 @require_auth(mongo)
 def rooms(id):
+    if "os" not in request.headers:
+        return "os required", 422
+    
     rooms = mongo.db.rooms.find({ "map": id })
     rooms = list(rooms)
     array = []
