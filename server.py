@@ -169,7 +169,7 @@ def update_training_data(id):
             "os": client_os
         }).count()
 
-        percent = float(num_samples) / 5000
+        percent = float(num_samples) / 500
         room["percent_trained-" + client_os] = percent
         room["num_samples-" + client_os] = num_samples
         roomsPercentTrained[room["name"]] = percent
