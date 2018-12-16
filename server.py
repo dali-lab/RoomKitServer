@@ -139,6 +139,7 @@ def update_training_data(id):
         return "os required", 422
     
     client_os = request.headers["os"]
+    roomsPercentTrained = {}
 
     for data in request.json:
         room = mongo.db.rooms.find_one_or_404({"name": data["room"], "map": id})
@@ -159,11 +160,14 @@ def update_training_data(id):
             "room": room["_id"],
             "os": client_os
         }).count()
-        room["percent_trained-" + client_os] = float(num_samples) / 5000
+
+        percent = float(num_samples) / 5000
+        room["percent_trained-" + client_os] = percent
         room["num_samples-" + client_os] = num_samples
+        roomsPercentTrained[room["name"]] = percent
         mongo.db.rooms.update({"_id": room["_id"]}, room, True)
 
-    return "Done"
+    return jsonify(roomsPercentTrained)
 
 
 @app.route('/maps/<id>/train', methods=['POST'])
