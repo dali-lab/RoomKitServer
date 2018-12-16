@@ -104,7 +104,10 @@ def rooms(id):
     client_os = request.headers["os"]
 
     for room in rooms:
-        percentTrained = room["percent_trained-" + client_os]
+        percentTrained = 0
+        if ("percent_trained" + client_os) in room:
+            percentTrained = room["percent_trained-" + client_os]
+        
         array.append({
             "name": room["name"],
             "percent_trained": percentTrained
